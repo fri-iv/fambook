@@ -43,20 +43,20 @@ class AuthClientClass:
             'email': self.email,
             'password': self.password
         }
-        return self.json_request('/register', data=data)
+        return self.json_request('/api/v1/register', data=data)
 
     def login(self):
         data = {
             'email': self.email,
             'password': self.password
         }
-        return self.json_request('/login', data=data)
+        return self.json_request('/api/v1/login', data=data)
 
     def logout(self):
-        return self.get_request('/logout')
+        return self.get_request('/api/v1/logout')
 
     def delete(self):
-        return self.get_request('/delete-me')
+        return self.get_request('/api/v1/delete-me')
 
 
 class AuthTestCase(unittest.TestCase):

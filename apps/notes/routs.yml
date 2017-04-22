@@ -1,0 +1,18 @@
+
+api/:
+    v1/:
+        create-note:
+            POST: note_create
+        delete-note:
+            POST: note_delete
+        get-notes:
+            GET: note_get_list
+
+
+
+        add-item:
+            POST: item_add
+        delete-item:
+            POST: item_delete
+        mark-item:
+            POST: item_mark

@@ -1,14 +1,14 @@
 from apps import app
 from flask import jsonify
 from apps.users.decorators import login_required
-from libs.tools import get_data, json_response, log
+from libs.tools import json_response, log
 
 
-@app.route('/create-note', methods=['POST'])
 @login_required
 def note_create(user, data):
     try:
         note = user.note_create(data)
+        note.changes_add(user, user.email + " created note '" + data['name'] + "'")
 
         if note:
             return json_response(200, 'Note created successfully', note.id)
@@ -19,7 +19,6 @@ def note_create(user, data):
         return jsonify(400)
 
 
-@app.route('/delete-note', methods=['POST'])
 @login_required
 def note_delete(user, data):
     try:
@@ -33,7 +32,16 @@ def note_delete(user, data):
         return jsonify(400)
 
 
-@app.route('/add-item', methods=['POST'])
+@login_required
+def note_get_list(user):
+    try:
+        notes = user.note_list_get()
+        return json_response(200, 'Notes list', notes)
+    except:
+        log()
+        return json_response(400, "Can't get notes")
+
+
 @login_required
 def item_add(user, data):
 
@@ -49,7 +57,6 @@ def item_add(user, data):
     return json_response(400, "Can't create new item")
 
 
-@app.route('/delete-item', methods=['POST'])
 @login_required
 def item_delete(user, data):
 
@@ -59,12 +66,11 @@ def item_delete(user, data):
         return json_response(400, "Missing note")
 
     if note.item_del(data['item_id']):
-        return json_response(200, 'Item deleted seccessfully')
+        return json_response(200, 'Item deleted successfully')
 
     return json_response(400, "Can't delete item")
 
 
-@app.route('/mark-item', methods=['POST'])
 @login_required
 def item_mark(user, data):
 

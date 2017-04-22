@@ -133,6 +133,9 @@ class User(Base):
                 return note2user.note
         return None
 
+    def note_list_get(self):
+        return [record.note.serialize() for record in self.notes]
+
     def note_create(self, data):
         from apps.notes.models import Note, Note2User
         try:

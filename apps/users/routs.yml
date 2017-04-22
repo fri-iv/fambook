@@ -1,0 +1,11 @@
+
+api/:
+    v1/:
+        register:
+            POST: register
+        delete-me:
+            GET: delete_me
+        login:
+            POST: login
+        logout:
+            GET: logout

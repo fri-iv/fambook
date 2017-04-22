@@ -8,7 +8,6 @@ from models import User, Session
 from libs.tools import json_response, log
 
 
-@app.route('/register', methods=['POST'])
 def register():
     try:
         resp = json.loads(request.data)
@@ -28,7 +27,6 @@ def register():
         return json_response(400, 'Input data is incorrect')
 
 
-@app.route('/delete-me', methods=['GET'])
 @login_required
 def delete_me(user):
     try:
@@ -41,7 +39,6 @@ def delete_me(user):
         return json_response(400, 'Could not delete this user')
 
 
-@app.route('/login', methods=['POST'])
 def login():
     try:
         data = json.loads(request.data)
@@ -58,7 +55,6 @@ def login():
         return json_response(400, 'Auth failed')
 
 
-@app.route('/logout', methods=['GET'])
 @login_required
 def logout(user):
     try:

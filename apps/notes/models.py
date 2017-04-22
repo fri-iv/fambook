@@ -47,6 +47,29 @@ class Note(Base):
 
         return 1
 
+    def changes_add(self, user, action=''):
+        changes = NoteChanges()
+        changes.user_id = user.id
+        changes.note_id = self.id
+        changes.action = action
+
+        db_session.add_(changes)
+        db_session.commit()
+
+    def serialize(self):
+        items = [dict(name=item.name, desciption=item.description) for item in self.items]
+        users = [dict(uid=record.user.id, email=record.user.email) for record in self.users]
+        changes = [dict(action=record.action, updated_at=record.updated_at) for record in self.changes]
+
+        return dict(
+            name=self.name,
+            status=self.status,
+            created_at=self.created_at,
+            items=items,
+            users=users,
+            changes=changes
+        )
+
 
 class Note2User(Base):
     __tablename__ = 'notes_users_m2m'
