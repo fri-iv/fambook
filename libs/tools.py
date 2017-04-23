@@ -5,7 +5,10 @@ from json import loads
 
 
 def get_data(req):
-    return loads(req.data)
+    try:
+        return loads(req.data)
+    except:
+        return None
 
 
 def json_response(status, details, body=None):

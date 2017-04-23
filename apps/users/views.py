@@ -1,17 +1,18 @@
 from apps import app
-from flask import jsonify, request, session
+from flask import request
 from db.db import db_session
-import json
 from decorators import login_required
-
-from models import User, Session
+from models import User
 from libs.tools import json_response, log
 
 
 def register():
+    from libs.tools import get_data
+
     try:
-        resp = json.loads(request.data)
-        if not resp['email'] or not resp['password']:
+        resp = get_data(request.data)
+
+        if not resp or not ('email' or 'password' in resp) or (not resp['email'] or not resp['password']):
             return json_response(400, 'Input data is incorrect')
 
         user = User.register(resp['email'], resp['password'])
@@ -40,8 +41,12 @@ def delete_me(user):
 
 
 def login():
+    from libs.tools import get_data
+
     try:
-        data = json.loads(request.data)
+        data = get_data(request.data)
+        if not data or not ('email' or 'password' in data):
+            return json_response(400, 'Input data is incorrect')
 
         res = User.login(data['email'], data['password'])
         if res == 2:

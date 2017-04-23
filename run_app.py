@@ -1,5 +1,5 @@
 from apps import app
-from libs.router import create_routs
+from libs.router import load_routs
 
-create_routs()
-app.run(debug=True)
+load_routs()
+app.run(debug=True, host='0.0.0.0', port=5000)
