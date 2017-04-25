@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, \
-    Boolean, DateTime, func
-from db.db import Base, db_session
+    Boolean, DateTime
+from db import Base
 from sqlalchemy.orm import relationship
 
 

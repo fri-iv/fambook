@@ -1,6 +1,6 @@
 from apps import app
 from flask import request
-from db.db import db_session
+from db import db_session
 from decorators import login_required
 from models import User
 from libs.tools import json_response, log
@@ -10,7 +10,7 @@ def register():
     from libs.tools import get_data
 
     try:
-        resp = get_data(request.data)
+        resp = get_data(request)
 
         if not resp or not ('email' or 'password' in resp) or (not resp['email'] or not resp['password']):
             return json_response(400, 'Input data is incorrect')
@@ -44,7 +44,7 @@ def login():
     from libs.tools import get_data
 
     try:
-        data = get_data(request.data)
+        data = get_data(request)
         if not data or not ('email' or 'password' in data):
             return json_response(400, 'Input data is incorrect')
 

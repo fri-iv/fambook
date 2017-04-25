@@ -1,10 +1,11 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from db.db import Base, db_session
+from db import Base, db_session
 from libs.tools import log
 import uuid
 from hashlib import md5
 from flask import session
+from apps.notes.models import Note2User
 
 
 class Session(Base):

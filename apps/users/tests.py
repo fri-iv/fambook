@@ -2,7 +2,7 @@ from apps import app
 import unittest
 import json
 from libs.tools import log
-from db.db import db_session
+from db import db_session
 
 
 class AuthClientClass:
@@ -70,8 +70,6 @@ class AuthTestCase(unittest.TestCase):
         users_count = db_session.execute('SELECT COUNT(*) FROM users;').first()
         sessions_count = db_session.execute('SELECT COUNT(*) FROM sessions;').first()
 
-        print 'Users({}/{}), Sessions({}/{})'.format(self.users_init_count, users_count,
-                                                     self.users_init_sess , sessions_count)
         assert self.users_init_count == users_count
         assert self.users_init_sess == sessions_count
 

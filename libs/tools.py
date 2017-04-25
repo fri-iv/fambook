@@ -8,6 +8,7 @@ def get_data(req):
     try:
         return loads(req.data)
     except:
+        log()
         return None
 
 

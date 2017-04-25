@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, \
     Boolean, DateTime
-from db.db import Base, db_session
+from db import Base, db_session
 from sqlalchemy.orm import relationship
 
 
@@ -53,7 +53,7 @@ class Note(Base):
         changes.note_id = self.id
         changes.action = action
 
-        db_session.add_(changes)
+        db_session.add(changes)
         db_session.commit()
 
     def serialize(self):

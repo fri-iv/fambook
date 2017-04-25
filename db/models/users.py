@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from db.db import Base, db_session
+from db import Base, db_session
 import sys, traceback
 import uuid
 from hashlib import md5

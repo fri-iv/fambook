@@ -1,7 +1,7 @@
 from functools import wraps
 from apps.users.models import Session
 from flask import session, request
-from db.db import db_session
+from db import db_session
 from libs.tools import json_response, get_data
 
 

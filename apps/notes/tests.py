@@ -1,6 +1,6 @@
 import unittest
 from apps.users.tests import AuthClientClass
-from db.db import db_session
+from db import db_session
 from apps.notes.models import Note, Note2User, NoteChanges, Item
 
 
@@ -98,9 +98,8 @@ class NotesTestCase(unittest.TestCase):
         note_id = response['body']
 
         response = self.note.notes_list_get()
-        print 'response',response
         assert response['body'][0]['name'] == 'NEW_NOTE'
-        assert response['body'][0]['status'] == False
+        assert not response['body'][0]['status']
         assert response['body'][0]['items'][0]['name'] == 'eggs'
 
         response = self.note.add_item(note_id, 'bread', '2 items')
