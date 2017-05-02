@@ -1,0 +1,12 @@
+version: '1.0'
+services:
+  fambook:
+    build:
+      dockerfile: Dockerfile
+      context: /opt/fambook
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/
+  postgres:
+
