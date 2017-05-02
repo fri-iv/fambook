@@ -2,6 +2,8 @@ from flask import jsonify
 import sys
 import traceback
 from json import loads
+from flask_socketio import emit
+from flask import request
 
 
 def get_data(req):
@@ -12,13 +14,15 @@ def get_data(req):
         return None
 
 
-def json_response(status, details, body=None):
-    return jsonify({
-        'status': status,
-        'details': details,
+def ws_response(status, body=None):
+    emit(request.event['message'], {
+        'code': status,
         'body': body
     })
 
+
+def json_response():
+    pass
 
 def log(text=None):
     print('ERROR: {}'.format(str(text)))

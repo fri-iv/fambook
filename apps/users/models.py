@@ -15,6 +15,7 @@ class Session(Base):
     token = Column(String)
     user_id = Column(Integer, ForeignKey("users.id", ondelete='CASCADE'))
     user = relationship('User', back_populates='session')
+    sid = Column(String)  # for websockets
 
     def __init__(self):
         self.token = str(uuid.uuid1())
@@ -27,86 +28,62 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    email = Column(String)
-    password = Column(String)
+    fb_uid = Column(String)
     session = relationship("Session", back_populates='user', cascade='all,delete', lazy='dynamic')
+    name = Column(String)
 
     notes = relationship('Note2User', back_populates='user', cascade='all,delete', lazy='dynamic')
     changes = relationship('NoteChanges', back_populates='user', cascade='all,delete', lazy='dynamic')
 
     def __repr__(self):
-        return "<User(email='%s', password='%s', session='%s')>" % (
-                    self.email, self.password, self.session)
+        return "<User(fb_uid='%s', name='%s', session='%s')>" % (
+                    self.fb_uid, self.name, self.session)
 
     def _delete_session(self):
         if self.session is not None:
             db_session.query(Session).filter(Session.user_id == self.id).delete()
             db_session.commit()
 
-            if 'token' in session:
-                del session['token']
-
-    def _create_session(self):
+    def _create_session(self, ws_sid, fb_token):
         try:
             self._delete_session()
 
             sess = Session()
             sess.user = self
-            session['token'] = sess.token
+            sess.token = fb_token
+            sess.sid = ws_sid
             db_session.add(sess)
             db_session.commit()
 
-            # self.session = sess
-            # db_session.commit()
         except Exception as newSessionError:
             db_session.rollback()
             log(newSessionError)
             session['token'] = None
 
     @classmethod
-    def register(cls, email, passwd):
-        try:
-            user = db_session.query(User).filter(User.email == email).first()
+    def register(cls, uid, last_name):
+        user = User(fb_uid=uid, name=last_name)
+        db_session.add(user)
 
-            if user:
-                return 0
+        db_session.commit()
+        return user
 
-            password = str(md5(passwd).hexdigest())
-            user = User(email=email, password=password)
-            user._create_session()
-
-            db_session.add(user)
-            db_session.commit()
-
-            return user
-        except Exception as RegisterUserError:
-            log(ReferenceError)
-            db_session.rollback()
-            return 0
 
     @classmethod
-    def authorize(cls, email, passwd):
-        data = db_session.query(User).filter(User.email == email,
-                                             User.password == str(md5(passwd).hexdigest())).first()
-        return data
+    def login(cls, ws_sid, fb_token):
+        from apps.facebook.facebook_api import Facebook, AuthError
 
-    @classmethod
-    def login(cls, email, password):
         try:
-            user_model = cls.authorize(email, password)
-            if user_model:
-                if not user_model.session or ('token' not in session) or (session['token'] is None):
-                    user_model._create_session()
-                    return user_model
-                else:
-                    return 1
-            else:
-                return 2
-        except Exception as LoginUserError:
-            log(LoginUserError)
-            db_session.rollback()
+            resp = Facebook(fb_token)
+        except AuthError:
+            return None
 
-            return 0
+        user = db_session.query(User).filter(User.fb_uid == resp.result['id']).first()
+        if not user:
+            user = cls.register(resp.result['id'], resp.result['name'])
+
+        user._create_session(ws_sid, fb_token)
+        return user
 
     def logout(self):
         try:
