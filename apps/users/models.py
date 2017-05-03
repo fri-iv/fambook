@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from db import Base, db_session
-from libs.tools import log
+# from libs.tools import log
 import uuid
 from hashlib import md5
 from flask import session
@@ -57,11 +57,11 @@ class User(Base):
 
         except Exception as newSessionError:
             db_session.rollback()
-            log(newSessionError)
+            # log(newSessionError)
             session['token'] = None
 
     @classmethod
-    def register(cls, uid, last_name):
+    def _register(cls, uid, last_name):
         user = User(fb_uid=uid, name=last_name)
         db_session.add(user)
 
@@ -80,7 +80,7 @@ class User(Base):
 
         user = db_session.query(User).filter(User.fb_uid == resp.result['id']).first()
         if not user:
-            user = cls.register(resp.result['id'], resp.result['name'])
+            user = cls._register(resp.result['id'], resp.result['name'])
 
         user._create_session(ws_sid, fb_token)
         return user
@@ -90,7 +90,7 @@ class User(Base):
             self._delete_session()
             return True
         except Exception as LogoutError:
-            log(LogoutError)
+            # log(LogoutError)
             db_session.rollback()
             return False
 
@@ -101,7 +101,7 @@ class User(Base):
             db_session.commit()
             return 1
         except Exception as UserDeletingError:
-            log(UserDeletingError)
+            # log(UserDeletingError)
             db_session.rollback()
             return 0
 
@@ -137,7 +137,7 @@ class User(Base):
 
             return note
         except Exception as NoteCreatingError:
-            log(NoteCreatingError)
+            # log(NoteCreatingError)
             db_session.rollback()
             return 0
 
@@ -152,5 +152,31 @@ class User(Base):
 
             return 1
         except Exception as NoteDeletingError:
-            log(NoteDeletingError)
+            # log(NoteDeletingError)
             return 0
+
+    def note_share(self, note_id, user):
+        from apps.notes.exceptions import NoteShareException
+        note = self.note_get(note_id)
+
+        note2user = db_session.query(Note2User).filter(Note2User.user == user,
+                                                       Note2User.note == note).first()
+        if note2user:
+            raise NoteShareException('already shared')
+
+        note2user = Note2User(note=note,
+                              user=user)
+        db_session.add(note2user)
+        db_session.commit()
+
+        return True
+
+    def note_archive(self, note_id, status):
+        from apps.notes.exceptions import NoteExistingException
+        note = self.note_get(note_id)
+
+        if not note:
+            raise NoteExistingException('doesnt exists')
+
+        note.archive(status)
+        return True

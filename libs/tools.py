@@ -4,6 +4,8 @@ import traceback
 from json import loads
 from flask_socketio import emit
 from flask import request
+from apps.users.models import User
+from db import db_session
 
 
 def get_data(req):
@@ -29,3 +31,7 @@ def json_response():
 def log(text=None):
     print('ERROR: {}'.format(str(text)))
     traceback.print_exc(file=sys.stdout)
+
+
+def get_user_by_id(user_id):
+    return db_session.query(User).filter(User.id == user_id).first()

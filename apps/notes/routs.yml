@@ -7,6 +7,10 @@ api/:
             POST: note_delete
         get-notes:
             GET: note_get_list
+        share-note:
+            GET: note_share
+        archive-note:
+            GET: note_archive
 
 
 

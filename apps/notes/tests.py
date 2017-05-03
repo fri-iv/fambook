@@ -31,8 +31,15 @@ class NotesClientClass(AuthClientClass):
 
     def archive_note(self, note_id, status=True):
         data = {
-            'id': note_id,
+            'note_id': note_id,
             'status': status
+        }
+        return self.emit_request('/api/v1/archive-note', data)
+
+    def share_note(self, note_id, user_id):
+        data = {
+            'note_id': note_id,
+            'user_id': user_id
         }
         return self.emit_request('/api/v1/archive-note', data)
 
@@ -114,6 +121,12 @@ class NotesTestCase(unittest.TestCase):
 
         response = self.note.delete_item(note_id, item_id)
         assert response['details'] == 'Item deleted successfully'
+
+        response = self.note.archive_note(note_id, True)
+        assert response['details'] == 'Note archived successfully'
+
+        response = self.note.archive_note(note_id, False)
+        assert response['details'] == 'Note unarchived successfully'
 
         response = self.note.delete_note(note_id)
         assert response['details'] == 'Note deleted successfully'

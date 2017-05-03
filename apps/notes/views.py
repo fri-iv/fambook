@@ -1,7 +1,6 @@
 from apps import app
-from flask import jsonify
 from apps.users.decorators import login_required
-from libs.tools import json_response, log, ws_response
+from libs.tools import log, ws_response, get_user_by_id
 
 
 @login_required
@@ -77,8 +76,31 @@ def item_mark(user, data):
     note = user.note_get(data['note_id'])
 
     if note.item_mark(data['item_id'], data['status']):
-        checked = 'checked' if data['status'] else 'unchecked'
-
-        return ws_response(200, 'Item ' + checked)
+        return ws_response(200, 'Item ' + ('' if data['status'] else 'un') + 'checked')
 
     return ws_response(400, "Can't change status")
+
+
+@login_required
+def note_share(user, data):
+    from apps.notes.exceptions import NoteShareException
+
+    user2 = get_user_by_id(data['user_id'])
+
+    if not user2:
+        return ws_response(404, 'User not found')
+
+    try:
+        if user.share(data['note_id'], user2):
+            return ws_response(200, 'Note shared successfully')
+    except NoteShareException:
+        return ws_response(400, "Can't share note for this user")
+
+
+@login_required
+def note_archive(user, data):
+
+    if user.note_archive(data['note_id'], data['status']):
+        return ws_response(200, "Note " + ('' if data['status'] else 'un') + 'archived successfully')
+
+    return ws_response(200, "Can't " + ('' if data['status'] else 'un') + ' archive note')

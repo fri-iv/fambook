@@ -6,28 +6,6 @@ from models import User
 from libs.tools import ws_response, log
 
 
-def register():
-    from libs.tools import get_data
-
-    try:
-        resp = get_data(request)
-
-        if not resp or not ('email' or 'password' in resp) or (not resp['email'] or not resp['password']):
-            return ws_response(400, 'Input data is incorrect')
-
-        user = User.register(resp['email'], resp['password'])
-
-        if not user:
-            return ws_response(400, 'User with same email already exists')
-
-        db_session.commit()
-
-        return ws_response(200, 'New user created successfully')
-    except Exception as e:
-        log(e)
-        return ws_response(400, 'Input data is incorrect')
-
-
 @login_required
 def delete_me(user):
     try:
@@ -45,7 +23,7 @@ def login(token):
     user = User.login(request.sid, token)
 
     if not user:
-        ws_response(400, "Can't login")
+        ws_response(403, "Can't login")
     else:
         body = dict(
             name=user.name,

@@ -11,6 +11,7 @@ class Note(Base):
     name = Column(String, nullable=True)
     status = Column(Boolean, server_default='False')
     created_at = Column(DateTime, server_default='now()')
+    archived = Column(Boolean, server_default='False')
 
     items = relationship('Item', back_populates='note', lazy='dynamic', cascade='all,delete')
     changes = relationship('NoteChanges', back_populates='note', lazy='dynamic', cascade='all,delete')
@@ -69,6 +70,10 @@ class Note(Base):
             users=users,
             changes=changes
         )
+
+    def archive(self, status):
+        self.archived = status
+        db_session.commit()
 
 
 class Note2User(Base):

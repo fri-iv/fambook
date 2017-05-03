@@ -4,9 +4,9 @@ import json
 from libs.tools import log
 from db import db_session
 
-TEST_FB_USER = 'EAAVSZCZBZCZCTvsBACHH5fqBZBfalOUy4HvZBz5MCK3ZBoZC4YGrrB3YyPhHZCAOvb3ozxr5I0Vg5MlHV9nEZAOycPRWo0NWt' \
-               '7oT5c24U2GxL0v4VO0VXeruQZCbsggbZBnceBnVfl6otKypdpdUiEtGyZCLjorSjeSdHK1QFSGjLmXYCgA5oC9fzGn43o1psH9' \
-               'ZA71ZA1k7ymZCYN3IdkuhYl6MtpW8Q78DbOJJCGxzOLl5MR3wiwZDZD'
+TEST_FB_USER = 'EAAVSZCZBZCZCTvsBAIzrsHRm9gWpB6cqobdkH4nOlO6iZAvUxz7LqyNaY567MovZBPc8TuSnwOA1aHpgEmqNpUImoV24UvOpqkLZ' \
+               'CEiAvwylpZAmZAyqq1PjiZBwmopONPoMDqLzTvk8ViDja5JHTCotZCzBsNHtZCQTcJ1nLLezZA4OT3S2SOI5yBS2IujjFRbBOFw4' \
+               'C2X4tW1eipUpOkYd4COm7fL2gb4JA0LFD9ZBEhKcLCIwZDZD'
 
 
 class AuthClientClass:
