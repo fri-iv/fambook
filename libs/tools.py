@@ -14,15 +14,17 @@ def get_data(req):
         return None
 
 
-def ws_response(status, body=None):
+def ws_response(status, details=None, body=None):
     emit(request.event['message'], {
         'code': status,
+        'details': details,
         'body': body
     })
 
 
 def json_response():
     pass
+
 
 def log(text=None):
     print('ERROR: {}'.format(str(text)))

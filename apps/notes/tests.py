@@ -8,7 +8,6 @@ class NotesClientClass(AuthClientClass):
 
     def __init__(self):
         AuthClientClass.__init__(self)
-        self.register()
         self.login()
 
     def create_note(self, name='NEW_NOTE', status=False, items=None):
@@ -22,20 +21,20 @@ class NotesClientClass(AuthClientClass):
                 name=item.name,
                 description=item.description
             ))
-        return self.json_request('/api/v1/create-note', data)
+        return self.emit_request('/api/v1/create-note', data)
 
     def delete_note(self, note_id):
         data = {
             'id': note_id
         }
-        return self.json_request('/api/v1/delete-note', data)
+        return self.emit_request('/api/v1/delete-note', data)
 
     def archive_note(self, note_id, status=True):
         data = {
             'id': note_id,
             'status': status
         }
-        return self.json_request('/api/v1/archive-note', data)
+        return self.emit_request('/api/v1/archive-note', data)
 
     def add_item(self, note_id, name, description=''):
         data = {
@@ -43,14 +42,14 @@ class NotesClientClass(AuthClientClass):
             'name': name,
             'description': description
         }
-        return self.json_request('/api/v1/add-item', data)
+        return self.emit_request('/api/v1/add-item', data)
 
     def delete_item(self, note_id, item_id):
         data = {
             'note_id': note_id,
             'item_id': item_id
         }
-        return self.json_request('/api/v1/delete-item', data)
+        return self.emit_request('/api/v1/delete-item', data)
 
     def mark_item(self, note_id, item_id, status=False):
         data = {
@@ -58,10 +57,10 @@ class NotesClientClass(AuthClientClass):
             'item_id': item_id,
             'status': status
         }
-        return self.json_request('/api/v1/mark-item', data)
+        return self.emit_request('/api/v1/mark-item', data)
 
     def notes_list_get(self):
-        return self.get_request('/api/v1/get-notes')
+        return self.emit_request('/api/v1/get-notes')
 
     def __del__(self):
         self.delete()

@@ -41,6 +41,7 @@ class Facebook:
     def user_auth(self):
         try:
             self.result = self.get_request('me')
+            print 'res2:', self.result
         except urllib2.HTTPError as e:
             log(e)
             raise AuthError

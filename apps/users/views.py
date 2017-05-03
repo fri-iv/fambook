@@ -41,16 +41,17 @@ def delete_me(user):
 
 
 def login(token):
+    print 'login func'
     user = User.login(request.sid, token)
 
     if not user:
-        ws_response(403)
+        ws_response(400, "Can't login")
     else:
         body = dict(
             name=user.name,
             id=user.id
         )
-        ws_response(200, body)
+        ws_response(200, 'Login successfully', body)
 
 
 @login_required

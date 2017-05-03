@@ -4,16 +4,18 @@ import json
 from libs.tools import log
 from db import db_session
 
-TEST_FB_USER = 'EAAVSZCZBZCZCTvsBAFNacHni5RvOEL8I0ZATX3DiQRas2KgpPP3ltqWepewxH9vtLRRikfesS9f1O88fdAMrrpKPow2q4dmaPsn' \
-               'YFYQTTvMfvY010MLBPyB2Hg6Szl5A97YpxwZBbSzHkbHZAjGVIyRtpUqTAeSF72th3HFa6Ytin5vAk8ioWv02Ikw2frmUIkrfkK' \
-               '5YIZCbQohkpkOYSODZBNoZBxz21ZABH3VjdeZBZAjDAnQZDZD'
+TEST_FB_USER = 'EAAVSZCZBZCZCTvsBACHH5fqBZBfalOUy4HvZBz5MCK3ZBoZC4YGrrB3YyPhHZCAOvb3ozxr5I0Vg5MlHV9nEZAOycPRWo0NWt' \
+               '7oT5c24U2GxL0v4VO0VXeruQZCbsggbZBnceBnVfl6otKypdpdUiEtGyZCLjorSjeSdHK1QFSGjLmXYCgA5oC9fzGn43o1psH9' \
+               'ZA71ZA1k7ymZCYN3IdkuhYl6MtpW8Q78DbOJJCGxzOLl5MR3wiwZDZD'
 
 
 class AuthClientClass:
-    def __init__(self, auth_token):
+    def __init__(self, auth_token=None):
         self.ws = socketio.test_client(app)
         self.user = None
         self.token = auth_token
+        if not auth_token:
+            self.token = TEST_FB_USER
 
     def emit_request(self, url, data=None):
         try:
@@ -29,8 +31,8 @@ class AuthClientClass:
     #     }
     #     return self.json_request('/api/v1/register', data=data)
 
-    def login(self, access_token):
-        return self.emit_request('/api/v1/login', access_token)
+    def login(self):
+        return self.emit_request('/api/v1/login', self.token)
 
     def logout(self):
         return self.emit_request('/api/v1/logout')
@@ -64,13 +66,13 @@ class AuthTestCase(unittest.TestCase):
         # if response['details'] == 'You are not login in':
         #     raise
 
-        response = self.auth.login(TEST_FB_USER)
+        response = self.auth.login()
         self.assertIn('id', response['body'])
 
         response = self.auth.logout()
         assert response['code'] == 200
 
-        self.auth.login(TEST_FB_USER)
+        self.auth.login()
         response = self.auth.delete()
         print 'response:', response
         assert response['code'] == 200
