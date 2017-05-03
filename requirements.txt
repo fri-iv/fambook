@@ -3,3 +3,4 @@ psycopg2
 sqlalchemy
 alembic
 PyYAML
+flask-socketio
