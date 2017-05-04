@@ -63,17 +63,20 @@ class Note(Base):
         changes = [dict(action=record.action, updated_at=record.updated_at) for record in self.changes]
 
         return dict(
+            id=self.id,
             name=self.name,
             status=self.status,
-            created_at=self.created_at,
+            created_at=str(self.created_at),
             items=items,
             users=users,
             changes=changes
         )
 
     def archive(self, status):
+
         self.archived = status
         db_session.commit()
+        return True
 
 
 class Note2User(Base):

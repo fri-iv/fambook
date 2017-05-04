@@ -39,6 +39,10 @@ class User(Base):
         return "<User(fb_uid='%s', name='%s', session='%s')>" % (
                     self.fb_uid, self.name, self.session)
 
+    @property
+    def avatar_url(self):
+        return 'https://graph.facebook.com/v2.9/' + self.fb_uid + '/picture?width=315&height=315'
+
     def _delete_session(self):
         if self.session is not None:
             db_session.query(Session).filter(Session.user_id == self.id).delete()
@@ -74,7 +78,9 @@ class User(Base):
         from apps.facebook.facebook_api import Facebook, AuthError
 
         try:
+            print 'dssdffsd'
             resp = Facebook(fb_token)
+            print 'aaaaaaa'
         except AuthError:
             return None
 
@@ -112,7 +118,7 @@ class User(Base):
         return None
 
     def note_list_get(self):
-        return [record.note.serialize() for record in self.notes]
+        return [record.note.serialize() for record in self.notes] or []
 
     def note_create(self, data):
         from apps.notes.models import Note, Note2User
@@ -120,6 +126,7 @@ class User(Base):
             note = Note()
             note.name = data['name']
             note.status = data['status']
+
             db_session.add(note)
             db_session.commit()
 

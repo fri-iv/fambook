@@ -99,21 +99,20 @@ class NotesTestCase(unittest.TestCase):
         items.append(TItem('potato', '2 kilo'))
 
         response = self.note.create_note('NEW_NOTE', False, items)
-        assert response['details'] == 'Note created successfully'
-        assert type(response['body']) == int
-        note_id = response['body']
+        assert type(response) == int
+        note_id = response
 
         response = self.note.notes_list_get()
-        assert response['body'][0]['name'] == 'NEW_NOTE'
-        assert not response['body'][0]['status']
-        assert response['body'][0]['items'][0]['name'] == 'eggs'
+        assert len(response) > 0
+        assert not response[0]['status']
+        assert response[0]['items'][0]['name'] == 'eggs'
 
         response = self.note.add_item(note_id, 'bread', '2 items')
-        assert response['details'] == 'Item added successfully'
-        assert type(response['body']) == int
-        item_id = response['body']
+        assert type(response) == int
+        item_id = response
 
         response = self.note.mark_item(note_id, item_id, True)
+        print 'checked:', response
         assert response['details'] == 'Item checked'
 
         response = self.note.mark_item(note_id, item_id, False)

@@ -16,12 +16,18 @@ def get_data(req):
         return None
 
 
-def ws_response(status, details=None, body=None):
-    emit(request.event['message'], {
-        'code': status,
-        'details': details,
-        'body': body
-    })
+def ws_response(status, details=None, body=None, event=None):
+    # data = dict(code=status,
+    #             details=details)
+    # data.update(body)
+    # emit(request.event['message'], data)
+    # print data
+    # emit(request.event['message'] if not event else event, {
+    #     'code': status,
+    #     'details': details,
+    #     'body': body
+    # })
+    emit(request.event['message'] if not event else event, body)
 
 
 def json_response():

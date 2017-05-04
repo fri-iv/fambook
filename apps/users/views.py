@@ -23,13 +23,15 @@ def login(token):
     user = User.login(request.sid, token)
 
     if not user:
-        ws_response(403, "Can't login")
+        return ws_response(403, "Can't login")
     else:
         body = dict(
             name=user.name,
-            id=user.id
+            id=user.id,
+            photo=user.avatar_url
         )
-        ws_response(200, 'Login successfully', body)
+        return ws_response(200, 'Login successfully', body)
+        # print 'login in'
 
 
 @login_required
