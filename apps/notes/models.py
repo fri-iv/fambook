@@ -59,7 +59,7 @@ class Note(Base):
 
     def serialize(self):
         items = [dict(name=item.name, desciption=item.description) for item in self.items]
-        users = [dict(uid=record.user.id, email=record.user.name) for record in self.users]
+        users = [dict(id=record.user.id, name=record.user.name, photo=record.user.avatar_url) for record in self.users]
         changes = [dict(action=record.action, updated_at=record.updated_at) for record in self.changes]
 
         return dict(

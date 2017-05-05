@@ -6,8 +6,11 @@ from db import Base, engine
 def start():
     load_routs()
     Base.metadata.create_all(engine)
-    # app.run(debug=True, host='0.0.0.0', port=5000)
+    # app.run(debug=True, host='0.0.0.0', port=5001)
+    # print 'started HTTP'
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    print 'started websockets'
+
 
 if __name__ == '__main__':
     start()
