@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
 # engine = create_engine('sqlite:///test.db', convert_unicode=True)
-engine = create_engine('postgresql+psycopg2://server:12345@localhost:5432/test2')
+engine = create_engine('postgresql+psycopg2://postgres:postgres@localhost:5432/test2')
 
 Base = declarative_base()
 
