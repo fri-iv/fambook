@@ -15,7 +15,7 @@ class AuthError(Exception):
 
 
 class FacebookBase:
-    app_token = None
+    access_token = None
     last_response = None
 
     def __init__(self):
@@ -25,10 +25,11 @@ class FacebookBase:
         if not params:
             params = dict()
 
-        if self.app_token:
-            params.update(dict(access_token=self.app_token))
+        if self.access_token:
+            params.update(dict(access_token=self.access_token))
 
         req = urllib2.Request(graph_url + endpoint + '?' + urllib.urlencode(params))
+        print graph_url + endpoint + '?' + urllib.urlencode(params)
         req.get_method = lambda: method
 
         try:
@@ -60,7 +61,7 @@ class FacebookUser(FacebookBase):
 
     def __init__(self, access_token):
         FacebookBase.__init__(self)
-        FacebookBase.access_token = access_token
+        self.access_token = access_token
 
         self.result = self.request('GET', 'me')
 

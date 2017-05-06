@@ -75,11 +75,12 @@ class User(Base):
 
     @classmethod
     def login(cls, ws_sid, fb_token):
-        from apps.facebook.facebook_api import Facebook, AuthError
+        from apps.facebook.facebook_api import FacebookUser, AuthError
 
         try:
             print 'dssdffsd'
-            resp = Facebook(fb_token)
+            resp = FacebookUser(fb_token)
+            print resp.result
             print 'aaaaaaa'
         except AuthError:
             return None

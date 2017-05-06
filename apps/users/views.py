@@ -19,23 +19,32 @@ def delete_me(user):
 
 
 def login(token):
-    print 'login func:', token
-    print type(token)
-    if not token or type(token) != str:
-        return 403
-    user = User.login(request.sid, token)
+    token = str(token)
+    print 'token: ', token
+    print 'type: ', type(token)
+    user = None
+    try:
+        user = User.login(request.sid, token)
+    except Exception as e:
+        print 'exeption:', e
 
     if not user:
         # return ws_response(403, "Can't login")
         print 'will recieve 403'
         return 403
     else:
+        print 'login in as ', user.name
         body = dict(
-            name=user.name,
+            name=user.name.encode('utf-8'),
             id=user.id,
             photo=user.avatar_url
         )
-        return ws_response(200, 'Login successfully', body)
+        try:
+            import json
+            return json.dumps(body)
+        except Exception as d:
+            print 'exception d:', d
+        # return ws_response(200, 'Login successfully', body)
         # print 'login in'
 
 
