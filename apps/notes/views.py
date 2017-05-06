@@ -42,7 +42,7 @@ def note_delete(user, data):
 
 
 @login_required
-def note_get_list(user, data):
+def note_get_list(user, data=None):
     import json
     print '-------!!!!!!!!!!!!-------------!!!!!!!!!!!!!--------'
     try:
