@@ -14,5 +14,6 @@ def login_required(func):
             else:
                 return func(sess.user)
         else:
-            ws_response(403, 'Please, login in first')
+            import json
+            return json.dumps(dict(code=403, message='Please, login in first'))
     return inner
