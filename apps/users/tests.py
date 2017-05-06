@@ -4,9 +4,10 @@ import json
 from libs.tools import log
 from db import db_session
 
-TEST_FB_USER = 'EAAVSZCZBZCZCTvsBAIMgUeTb1bZBMSNlon5Y98Vdg4KTZBsqxF8W0sn3VhdIxyoSeAcAZBpBEdBJrj5XDcNjqSZCena1u9DgMvp' \
-               '57PO93SpeZA4ZA5Ekecvo5L88G7pgq9oBBE370ZA9pIbJkVGAeeX82lxZBYs6oAY5ZAEAdbe6cNQruB8pugqHdspKIc95HGZCAW' \
-               '58yYyBKAJUDkoCPhvfx4Oi65wQypGCwqBhdNZCBwuFBIlbQZDZD'
+
+def get_facebook_user(name):
+    from apps.facebook.facebook_api import FacebookTestUser
+
 
 
 class AuthClientClass:
@@ -44,6 +45,7 @@ class AuthClientClass:
 class AuthTestCase(unittest.TestCase):
 
     def setUp(self):
+        user
         self.users_init_count = db_session.execute('SELECT COUNT(*) FROM users;').first()
         self.users_init_sess = db_session.execute('SELECT COUNT(*) FROM sessions;').first()
         self.auth = AuthClientClass(TEST_FB_USER)

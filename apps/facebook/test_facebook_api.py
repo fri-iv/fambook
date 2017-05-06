@@ -1,12 +1,15 @@
 from facebook_api import FacebookTestUser
 
-f = FacebookTestUser()
-users = f.test_user_list()
-print 'users:', users
-print 'type:', type(users)
+f = FacebookTestUser('Big Brother')
+print 'f:', f
+# print user
+# print 'users:', users
+# print 'type:', type(users)
 
-for user in users:
-    print user
+# for user in users:
+#     print user
+#     # f.test_user_delete(user['id'])
+#     print '-----------------------------------------'
 # print f.app_auth()
 # pointer = f.pointer()
 # print pointer

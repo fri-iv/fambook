@@ -14,13 +14,12 @@ class AuthError(Exception):
     pass
 
 
-class Facebook:
-    result = None
+class FacebookBase:
     app_token = None
+    last_response = None
 
-    def __init__(self, token=''):
-        self.token = token
-        self.user_auth()
+    def __init__(self):
+        pass
 
     def request(self, method, endpoint='', params=None):
         if not params:
@@ -28,91 +27,87 @@ class Facebook:
 
         if self.app_token:
             params.update(dict(access_token=self.app_token))
-        # print method + ':' + graph_url + endpoint + '?' + urllib.urlencode(params)
 
-        req = urllib2.Request(graph_url + endpoint, data=urllib.urlencode(params))
+        req = urllib2.Request(graph_url + endpoint + '?' + urllib.urlencode(params))
         req.get_method = lambda: method
 
-        print req.get_method() + ':' + req.get_full_url() + '?' + req.get_data()
-
         try:
-            result = urllib2.urlopen(req)
-            return json.loads(result.read())
+            self.last_response = urllib2.urlopen(req)
+            return json.loads(self.last_response.read())
         except urllib2.HTTPError as e:
             data = json.loads(e.read())['error']
-            print '<FacebookReqiestError[{}], Type[{}]: {}>'.format(str(e.code), data['type'], data['message'])
-            return None
+            print '<FacebookRequestError[{}], Type[{}]: {}>'.format(str(e.code), data['type'], data['message'])
+            raise AuthError
+            # return None
 
 
-    def get_request(self, url, data=None):
-        url = graph_url + url + ('?' if '?' not in url else '&') + 'access_token={}'.format(self.token)
-        self.result = urllib2.urlopen(url)
+class FacebookApp(FacebookBase):
 
-        return json.loads(self.result.read())
+    def __init__(self, grant_type='client_credentials'):
+        FacebookBase.__init__(self)
 
-    def app_auth(self, grant_type='client_credentials'):
-
-        res = self.request('POST', 'oauth/access_token', dict(client_id=APP_ID,
+        req = self.request('POST', 'oauth/access_token', dict(client_id=APP_ID,
                                                               client_secret=APP_SECRET,
                                                               grant_type=grant_type))
-        self.app_token = res['access_token']
-        return self.app_token
-
-    def user_auth(self):
-        try:
-            self.result = self.get_request('me')
-            print 'res2:', self.result
-        except urllib2.HTTPError as e:
-            raise AuthError
+        self.access_token = req['access_token']
 
 
-class FacebookTestUser(Facebook):
-    def __init__(self):
-        Facebook.__init__(self)
-        self.app_auth()
+class FacebookUser(FacebookBase):
 
-    def test_user_create(self, name):
+    access_token = None
+    name = None
+    fb_id = None
 
-        req = self.request('POST', APP_ID + '/accounts/test-users', dict(
+    def __init__(self, access_token):
+        FacebookBase.__init__(self)
+        FacebookBase.access_token = access_token
+
+        self.result = self.request('GET', 'me')
+
+
+class FacebookTestUser:
+
+    access_token = None
+    fb_user_id = None
+    name = None
+
+    c_app = None
+    c_user = None
+
+    def __init__(self, name=None):
+        self.c_app = FacebookApp()
+
+        if name:
+            user = self.get_user(name)
+
+    def get_user(self, name):
+        users = self.test_user_list()
+        print 'users:', users
+
+        for user in users['data']:
+            u = FacebookUser(user['access_token'])
+            if u.name == name:
+                self.access_token = user['access_token']
+                return u
+
+        res = self._test_user_create(name)
+        print 'created :', res
+
+    def _test_user_create(self, name):
+
+        name = name.strip()
+
+        req = self.c_app.request('POST', APP_ID + '/accounts/test-users', dict(
             installed='true',
             name=name))
-        # import urllib
-        #
-        # data = dict(
-        #     installed='true',
-        #     name='Prosto Vasia',
-        #     access_token=self.app_token
-        # )
-        # url = APP_ID + '/accounts/test-users'
-        # print graph_url + url
-        # print 'data:', urllib.urlencode(data)
-        # req = urllib2.Request(graph_url + url, data=urllib.urlencode(data))
-        # # req.add_header('Content-Type', 'application/json')
-        # req.get_method = lambda: 'POST'
-        # self.result = urllib2.urlopen(req)
-        # print self.result
-        # self.result = self.result.read()
-        print req
-
-    def test_user_list(self):
-        req = self.request('POST', APP_ID + '/accounts/test-users')
-        # url = APP_ID + '/accounts/test-users?access_token={}'.format(self.app_token)
-        #
-        # self.result = urllib2.urlopen(graph_url + url)
-        # self.result = self.result.read()
-
         return req
 
-    def test_user_delete(self, user_id):
-        req = self.request('DELETE', APP_ID + '/accounts/test-users')
+    def test_user_list(self):
+        print 'app token:', self.c_app.access_token
+        req = self.c_app.request('GET', APP_ID + '/accounts/test-users')
+        return req
 
-        # import urllib
-        # data = dict(
-        #     access_token=self.app_token
-        # )
-        # req = urllib2.Request(graph_url + user_id, data=urllib.urlencode(data))
-        # req.get_method = lambda: 'DELETE'
-        # self.result = urllib2.urlopen(req)
-        # print self.result
-        # self.result = self.result.read()
-        print req
+    def _test_user_delete(self, user_id):
+
+        req = self.c_app.request('DELETE', user_id)
+        return req
