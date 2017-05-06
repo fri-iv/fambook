@@ -48,7 +48,7 @@ def note_get_list(user, data):
         notes = user.note_list_get()
         return json.dumps(notes)
     except Exception as e:
-        print e
+        print '************* ERRORR ****************', e
         # log()
         return dict(status=400, message="Can't get notes")
 
