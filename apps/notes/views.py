@@ -44,6 +44,7 @@ def note_delete(user, data):
 @login_required
 def note_get_list(user, data):
     import json
+    print '-------!!!!!!!!!!!!-------------!!!!!!!!!!!!!--------'
     try:
         notes = user.note_list_get()
         return json.dumps(notes)
