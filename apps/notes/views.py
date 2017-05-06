@@ -9,7 +9,7 @@ def note_create(user, data):
     try:
         print 'in note'
         print 'encoded:', data.encode('utf-8')
-        print 'encoded type:', type(data.encode('utf-8'))
+        # print 'encoded type:', type(data.encode('utf-8'))
         print 'data:', data
         print 'type:', type(data)
         print 'json: ', json.loads(data)
