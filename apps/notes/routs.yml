@@ -1,22 +1,54 @@
+# if field is default, it's can't be required = True:
+#           default = <VALUE>    ->     required = False
+#           default =   <>       ->     required = True
+# EXAMPLES:
+# input: int 50
+# input: int
+#
+# text(max_len)
 
 api/:
     v1/:
         create-note:
-            POST: note_create
-        delete-note:
-            POST: note_delete
-        get-notes:
-            GET: note_get_list
-        share-note:
-            GET: note_share
-        archive-note:
-            GET: note_archive
+            view: note_create
+            input:
+                name: text(100)
+                note_id: int
+                description: text(150)
+                status: bool False
 
+        delete-note:
+            view: note_delete
+            input:
+                note_id: int
+        get-notes:
+            view: note_get_list
+        share-note:
+            view: note_share
+            input:
+                user_id: int
+                note_id: int
+        archive-note:
+            view: note_archive
+            input:
+                note_id: int
+                status: bool
 
 
         add-item:
-            POST: item_add
+            view: item_add
+            input:
+                note_id: int
+                name: text(100)
+                description: text
         delete-item:
-            POST: item_delete
+            view: item_delete
+            input:
+                 note_id: int
+                 item_id: int
         mark-item:
-            POST: item_mark
+            view: item_mark
+            input:
+                note_id: int
+                item_id: int
+                status: bool
