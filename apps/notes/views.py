@@ -17,7 +17,7 @@ def note_create(user, data):
 @login_required
 def note_delete(user, data):
 
-    if user.note_delete(data['id']):
+    if user.note_delete(data['note_id']):
         return ws_callback()
 
     return ws_error(400, 'Note could not be deleted')

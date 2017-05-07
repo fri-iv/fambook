@@ -1,9 +1,22 @@
+# if field is default, it's can't be required = True:
+#           default = <VALUE>    ->     required = False
+#           default =   <>       ->     required = True
+# EXAMPLES:
+# input: int 50
+# input: int
+#
+# text(max_len)
+
 
 api/:
     v1/:
         delete-me:
-            GET: delete_me
+            view: delete_me
+
         login:
-            POST: login
+            view: login
+            input:
+                access_token: text(300)
+
         logout:
-            GET: logout
+            view: logout

@@ -28,7 +28,7 @@ class NotesClientClass(AuthClientClass):
 
     def delete_note(self, note_id):
         data = {
-            'id': note_id
+            'note_id': note_id
         }
         return self.emit_request('/api/v1/delete-note', data)
 
