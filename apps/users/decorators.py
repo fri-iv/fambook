@@ -1,8 +1,8 @@
-from functools import wraps
 from apps.users.models import Session
-from flask import session, request
+from flask import request
 from db import db_session
-from libs.tools import ws_response
+from libs.tools import ws_error
+from json import loads
 
 
 def login_required(func):
@@ -10,10 +10,9 @@ def login_required(func):
         sess = db_session.query(Session).filter(Session.sid == request.sid).first()
         if sess:
             if data:
-                return func(sess.user, data)
+                return func(sess.user, loads(data))
             else:
                 return func(sess.user)
         else:
-            import json
-            return json.dumps(dict(code=403, message='Please, login in first'))
+            return ws_error(403,'Please, login in first')
     return inner

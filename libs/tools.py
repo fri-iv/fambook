@@ -30,6 +30,23 @@ def ws_response(status, details=None, body=None, event=None):
     emit(request.event['message'] if not event else event, body)
 
 
+def ws_callback(data=None):
+    if not data:
+        data = dict(
+            successfully=True
+        )
+    return jsonify(data)
+
+
+def ws_error(error, message):
+    return jsonify(
+        dict(
+            error=error,
+            message=message
+        )
+    )
+
+
 def json_response():
     pass
 

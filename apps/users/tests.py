@@ -1,39 +1,41 @@
 from apps import socketio, app
 import unittest
-import json
 from libs.tools import log
 from db import db_session
+from apps.facebook.facebook_api import FacebookTestUser
+import json
 
 
-def get_facebook_user(name):
-    from apps.facebook.facebook_api import FacebookTestUser
-
+def callback(data):
+    print 'callback:', data.data
 
 
 class AuthClientClass:
     def __init__(self, auth_token=None):
         self.ws = socketio.test_client(app)
-        self.user = None
         self.token = auth_token
-        if not auth_token:
-            self.token = TEST_FB_USER
 
     def emit_request(self, url, data=None):
+        import json
+
         try:
-            self.ws.emit(url, data)
-            return self.ws.get_received()[0]['args'][0]
+            resp = self.ws.emit(url, json.dumps(data), callback=callback)
+            print '-------------------------------------'
+            print url
+            print 'raw response:', resp
+            print 'resp type:', type(resp)
+            from flask import Response
+            if type(resp) == Response:
+                print '(Response) data:', json.loads(resp.data)
+                return json.loads(resp.data)
+            else:
+                print '(JSON) data:', json.loads(resp)
+                return json.loads(resp)
         except Exception as JsonRequestError:
             log(JsonRequestError)
 
-    # def register(self):
-    #     data = {
-    #         'email': self.email,
-    #         'password': self.password
-    #     }
-    #     return self.json_request('/api/v1/register', data=data)
-
     def login(self):
-        return self.emit_request('/api/v1/login', self.token)
+        return self.emit_request('/api/v1/login', dict(access_token=self.token))
 
     def logout(self):
         return self.emit_request('/api/v1/logout')
@@ -45,10 +47,8 @@ class AuthClientClass:
 class AuthTestCase(unittest.TestCase):
 
     def setUp(self):
-        user
         self.users_init_count = db_session.execute('SELECT COUNT(*) FROM users;').first()
         self.users_init_sess = db_session.execute('SELECT COUNT(*) FROM sessions;').first()
-        self.auth = AuthClientClass(TEST_FB_USER)
 
     def tearDown(self):
         users_count = db_session.execute('SELECT COUNT(*) FROM users;').first()
@@ -58,23 +58,17 @@ class AuthTestCase(unittest.TestCase):
         assert self.users_init_sess == sessions_count
 
     def test_auth(self):
-        # response = self.auth.login()
-        # if response['details'] == 'Login or password is incorrect':
-        #     response = self.auth.register()
-        #     if response['details'] == 'User with same email already exists':
-        #         raise
-        #
-        # response = self.auth.logout()
-        # if response['details'] == 'You are not login in':
-        #     raise
 
-        response = self.auth.login()
-        self.assertIn('id', response['body'])
+        fb_user = FacebookTestUser('Yanukovych Viktor')
+        auth = AuthClientClass(fb_user.access_token)
 
-        response = self.auth.logout()
-        assert response['code'] == 200
+        response = auth.login()
+        self.assertIn('id', response)
 
-        self.auth.login()
-        response = self.auth.delete()
-        print 'response:', response
-        assert response['code'] == 200
+        response = auth.logout()
+        print 'logout:', response
+        self.assertIn('successfully', response)
+
+        auth.login()
+        response = auth.delete()
+        self.assertIn('successfully', response)

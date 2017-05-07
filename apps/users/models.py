@@ -78,10 +78,7 @@ class User(Base):
         from apps.facebook.facebook_api import FacebookUser, AuthError
 
         try:
-            print 'dssdffsd'
             resp = FacebookUser(fb_token)
-            print resp.result
-            print 'aaaaaaa'
         except AuthError:
             return None
 

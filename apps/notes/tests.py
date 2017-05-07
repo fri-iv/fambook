@@ -7,7 +7,10 @@ from apps.notes.models import Note, Note2User, NoteChanges, Item
 class NotesClientClass(AuthClientClass):
 
     def __init__(self):
-        AuthClientClass.__init__(self)
+        from apps.facebook.facebook_api import FacebookTestUser
+
+        fb_user = FacebookTestUser('Yanukovych Viktor')
+        AuthClientClass.__init__(self, fb_user.access_token)
         self.login()
 
     def create_note(self, name='NEW_NOTE', status=False, items=None):
@@ -99,8 +102,8 @@ class NotesTestCase(unittest.TestCase):
         items.append(TItem('potato', '2 kilo'))
 
         response = self.note.create_note('NEW_NOTE', False, items)
-        assert type(response) == int
-        note_id = response
+        self.assertIn('name', response)
+        note_id = response['id']
 
         response = self.note.notes_list_get()
         assert len(response) > 0
@@ -108,24 +111,28 @@ class NotesTestCase(unittest.TestCase):
         assert response[0]['items'][0]['name'] == 'eggs'
 
         response = self.note.add_item(note_id, 'bread', '2 items')
-        assert type(response) == int
-        item_id = response
+        self.assertIn('name', response)
+
+        item_id = None
+        for item in response['items']:
+            if item['name'] == 'bread' and item['name'] == 'bread':
+                item_id = item['id']
+                break
 
         response = self.note.mark_item(note_id, item_id, True)
-        print 'checked:', response
-        assert response['details'] == 'Item checked'
+        self.assertIn('successfully', response)
 
         response = self.note.mark_item(note_id, item_id, False)
-        assert response['details'] == 'Item unchecked'
+        self.assertIn('successfully', response)
 
         response = self.note.delete_item(note_id, item_id)
-        assert response['details'] == 'Item deleted successfully'
+        self.assertIn('successfully', response)
 
         response = self.note.archive_note(note_id, True)
-        assert response['details'] == 'Note archived successfully'
+        self.assertIn('successfully', response)
 
         response = self.note.archive_note(note_id, False)
-        assert response['details'] == 'Note unarchived successfully'
+        self.assertIn('successfully', response)
 
         response = self.note.delete_note(note_id)
-        assert response['details'] == 'Note deleted successfully'
+        self.assertIn('successfully', response)

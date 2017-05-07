@@ -1,7 +1,7 @@
 from facebook_api import FacebookTestUser
 
-f = FacebookTestUser('Big Brother')
-print 'f:', f
+f = FacebookTestUser('Big Brother John')
+
 # print user
 # print 'users:', users
 # print 'type:', type(users)
@@ -17,4 +17,4 @@ print 'f:', f
 # print user
 # print f.delete_test_user('108790399692628')
 # print f.delete_test_user('104086696832220')
-# print f.delete_test_user('111030702800927')
+# print f.delete_test_user('   111030702800927')

@@ -58,7 +58,7 @@ class Note(Base):
         db_session.commit()
 
     def serialize(self):
-        items = [dict(name=item.name, desciption=item.description) for item in self.items]
+        items = [item.serialize() for item in self.items]
         users = [dict(id=record.user.id, name=record.user.name, photo=record.user.avatar_url) for record in self.users]
         changes = [dict(action=record.action, updated_at=record.updated_at) for record in self.changes]
 
@@ -113,3 +113,14 @@ class Item(Base):
 
     note_id = Column(Integer, ForeignKey('notes.id', ondelete='CASCADE'), nullable=False)
     note = relationship('Note', back_populates='items')
+
+    def __repr__(self):
+        return "<Item({}): {}: {}, {}>".format(self.id, self.name, self.description,
+                                               (' ' if self.status else ' un') + 'completed')
+
+    def serialize(self):
+        return dict(
+            id=self.id,
+            name=self.name,
+            description=self.description
+        )

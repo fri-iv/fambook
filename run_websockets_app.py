@@ -3,6 +3,15 @@ from libs.router import load_routs
 from db import Base, engine
 
 
+@socketio.on('connect')
+def connection():
+    print 'connecting'
+
+
+@socketio.on('message')
+def message(data):
+    print 'message:', data
+
 def start():
     load_routs()
     Base.metadata.create_all(engine)

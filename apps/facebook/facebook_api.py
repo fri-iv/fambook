@@ -29,7 +29,7 @@ class FacebookBase:
             params.update(dict(access_token=self.access_token))
 
         req = urllib2.Request(graph_url + endpoint + '?' + urllib.urlencode(params))
-        print graph_url + endpoint + '?' + urllib.urlencode(params)
+        # print graph_url + endpoint + '?' + urllib.urlencode(params)
         req.get_method = lambda: method
 
         try:
@@ -52,63 +52,67 @@ class FacebookApp(FacebookBase):
                                                               grant_type=grant_type))
         self.access_token = req['access_token']
 
+    def test_user_create(self, name):
+
+        name = name.strip()
+
+        req = self.request('POST', APP_ID + '/accounts/test-users', dict(
+            installed='true',
+            name=name))
+        return req
+
+    def test_user_list(self):
+        req = self.request('GET', APP_ID + '/accounts/test-users')
+        return req
+
+    def test_user_delete(self, user_id):
+
+        req = self.request('DELETE', user_id)
+        return req
+
 
 class FacebookUser(FacebookBase):
 
     access_token = None
     name = None
     fb_id = None
+    id = None
 
     def __init__(self, access_token):
         FacebookBase.__init__(self)
         self.access_token = access_token
 
         self.result = self.request('GET', 'me')
+        self.name = self.result['name']
+        self.fb_id = self.result['id']
+
+    def __repr__(self):
+        return "<FacebookUser({}, {})>".format(self.fb_id, self.name)
 
 
-class FacebookTestUser:
+class FacebookTestUser(FacebookUser):
 
-    access_token = None
-    fb_user_id = None
-    name = None
+    app = None
 
-    c_app = None
-    c_user = None
+    def __init__(self, name):
 
-    def __init__(self, name=None):
-        self.c_app = FacebookApp()
-
-        if name:
-            user = self.get_user(name)
-
-    def get_user(self, name):
-        users = self.test_user_list()
-        print 'users:', users
+        self.app = FacebookApp()
+        users = self.app.test_user_list()
 
         for user in users['data']:
-            u = FacebookUser(user['access_token'])
-            if u.name == name:
-                self.access_token = user['access_token']
-                return u
+            FacebookUser.__init__(self, user['access_token'])
 
-        res = self._test_user_create(name)
-        print 'created :', res
+            if self.name == name:
+                break
 
-    def _test_user_create(self, name):
+        if self.name != name:
+            print self.name + ' != ' + name
+            user = self.app.test_user_create(name)
+            FacebookUser.__init__(self, user['access_token'])
 
-        name = name.strip()
+    def delete(self):
+        self.app.test_user_delete(self.fb_id)
 
-        req = self.c_app.request('POST', APP_ID + '/accounts/test-users', dict(
-            installed='true',
-            name=name))
-        return req
 
-    def test_user_list(self):
-        print 'app token:', self.c_app.access_token
-        req = self.c_app.request('GET', APP_ID + '/accounts/test-users')
-        return req
-
-    def _test_user_delete(self, user_id):
-
-        req = self.c_app.request('DELETE', user_id)
-        return req
+    def __repr__(self):
+        return "<FacebookTestUser({}, {})>".format(self.fb_id, self.name)
