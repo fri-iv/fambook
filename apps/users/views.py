@@ -11,7 +11,7 @@ def delete_me(user, data=None):
     if user.delete():
         return ws_callback()
 
-    return ws_error(400, 'Could not delete this user')
+    return ws_error(400, "Can't delete this user")
 
 
 def login(data):
